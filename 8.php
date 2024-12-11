@@ -92,8 +92,6 @@ do {
 
 fclose($fh);
 
-$grid->p();
-
 $antis = [];
 foreach ($grid->grid as $i => $row) {
     foreach ($row as $j => $pt) {
@@ -118,6 +116,42 @@ foreach ($grid->grid as $i => $row) {
     }
 }
 
+echo 'Part A: ' . count($antis) . PHP_EOL;
+
 $grid->p();
 
-echo 'Part A: ' . count($antis) . PHP_EOL;
+$antis = [];
+foreach ($grid->grid as $i => $row) {
+    foreach ($row as $j => $pt) {
+        $v = $pt->value;
+        if ($v !== '.') {
+            $locations = $grid->index[$v];
+            foreach ($locations as $b) {
+                if ($pt !== $b) {
+                    $x = $pt->x;
+                    $y = $pt->y;
+
+                    $pt->anti = true;
+                    $antis[$x.'|'.$y] = $pt;
+
+                    $d = $pt->dist($b);
+                    
+                    do {
+                        $x = $x + $d[0];
+                        $y = $y + $d[1];
+
+                        $n = $grid->get($x, $y);
+                        if ($n) {
+                            $n->anti = true;
+                            $antis[$x.'|'.$y] = $n;
+                        }
+                    } while ($n !== false);
+                }
+            }
+        }
+    }
+}
+
+$grid->p();
+
+echo 'Part B: ' . count($antis) . PHP_EOL;
